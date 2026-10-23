@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HW5 - Lighting & Shading</title>
+  <style>
+    body { background: #111; color: #ccc; font-family: monospace; margin: 16px; }
+    canvas { border: 1px solid #444; max-width: 100%; }
+    .layout { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+    .editors { display: flex; flex-direction: column; gap: 10px; }
+    textarea {
+      background: #222; color: #0f0; font: 13px monospace;
+      width: 400px; max-width: 100%; height: 200px; box-sizing: border-box;
+    }
+    #shaderError { color: #f66; white-space: pre-wrap; width: 400px; margin: 0; }
+    .controls { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; max-width: 430px; }
+    .control-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    fieldset { border: 1px solid #555; padding: 8px; }
+    legend { color: #9cf; }
+    label { display: inline-block; }
+    input[type="range"] { width: 130px; }
+    input[type="color"] { width: 42px; height: 26px; border: 0; background: transparent; }
+    .value { display: inline-block; min-width: 38px; }
+    button, select { background: #222; color: #ddd; border: 1px solid #555; padding: 4px; }
+    p { line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <h2>Hierarchical Model with Two Lights</h2>
+  <p>
+    Edit the shaders on the left; the canvas updates as you type.<br>
+    Drag with the mouse to rotate the model. Use arrow keys and W/S to move the camera.<br>
+    Use the original rotation slider and the extra upper-arm/hand controls below.
+  </p>
+
+  <div class="layout">
+    <div class="editors">
+      <div><b>Vertex Shader</b><br><textarea id="vertEditor" spellcheck="false"></textarea></div>
+      <div><b>Fragment Shader</b><br><textarea id="fragEditor" spellcheck="false"></textarea></div>
+      <pre id="shaderError"></pre>
+    </div>
+
+    <div>
+      <canvas id="glcanvas" width="400" height="400"></canvas>
+      <div class="controls">
+        <fieldset>
+          <legend>Original Model Controls</legend>
+          <div class="control-row">
+            <label for="slider">Rotation:</label>
+            <input type="range" id="slider" min="0" max="360" value="0">
+            <span id="sliderValue" class="value">0</span>
+          </div>
+          <div class="control-row">
+            <select id="axisSelect">
+              <option value="x">X Rotation</option>
+              <option value="y">Y Rotation</option>
+              <option value="z">Z Rotation</option>
+            </select>
+            <button id="spinButton">Start/Stop Rotation</button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Object Movement Controls</legend>
+          <div class="control-row">
+            <label for="upperArmAngle">Upper arm:</label>
+            <input type="range" id="upperArmAngle" min="-90" max="90" value="0">
+            <span id="upperArmAngleValue" class="value">0°</span>
+          </div>
+          <div class="control-row">
+            <label for="handAngle">Hand:</label>
+            <input type="range" id="handAngle" min="-90" max="90" value="0">
+            <span id="handAngleValue" class="value">0°</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Upper Arm Material</legend>
+          <div class="control-row">
+            <label for="upperArmColor">Diffuse color:</label><input type="color" id="upperArmColor" value="#3366ff">
+          </div>
+          <div class="control-row">
+            <label for="upperArmSpecular">Specular:</label>
+            <input type="range" id="upperArmSpecular" min="0" max="100" value="12">
+            <span id="upperArmSpecularValue" class="value">12%</span>
+          </div>
+          <div class="control-row">
+            <label for="upperArmShininess">Shininess:</label>
+            <input type="range" id="upperArmShininess" min="1" max="128" value="12">
+            <span id="upperArmShininessValue" class="value">12</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Hand Material</legend>
+          <div class="control-row">
+            <label for="handColor">Diffuse color:</label><input type="color" id="handColor" value="#00ff00">
+          </div>
+          <div class="control-row">
+            <label for="handSpecular">Specular:</label>
+            <input type="range" id="handSpecular" min="0" max="100" value="95">
+            <span id="handSpecularValue" class="value">95%</span>
+          </div>
+          <div class="control-row">
+            <label for="handShininess">Shininess:</label>
+            <input type="range" id="handShininess" min="1" max="128" value="96">
+            <span id="handShininessValue" class="value">96</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Lighting</legend>
+          <div class="control-row">
+            <label for="light2Intensity">Second light intensity:</label>
+            <input type="range" id="light2Intensity" min="0" max="100" value="70">
+            <span id="light2IntensityValue" class="value">70%</span>
+          </div>
+          <p>Light 1 is a warm key light; Light 2 is a cool fill light. Cube faces use flat normals; sphere/cylinder surfaces use interpolated normals.</p>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <script src="transforms.js"></script>
+  <script src="models.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
